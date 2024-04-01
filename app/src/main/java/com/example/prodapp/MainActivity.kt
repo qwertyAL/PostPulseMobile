@@ -1,48 +1,45 @@
 package com.example.prodapp
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.prodapp.screens.ProfileScreen
+import androidx.lifecycle.lifecycleScope
+import com.example.data.api.Api
+import com.example.prodapp.screens.LoginScreen
+import com.example.prodapp.screens.MainScreen
 import com.example.prodapp.ui.theme.ProdappTheme
-import com.example.prodapp.viewmodel.ProfileViewModel
+import com.example.prodapp.viewmodel.MainViewModel
+import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
+
+    private val mainViewModel by viewModel<MainViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val pvm = ProfileViewModel()
-        val id = pvm.id.value
+
+//        lifecycleScope.launch {
+            Log.i("TEST_CHANNELS", Api().getListChannels().toString())
+//        }
 
         setContent {
             ProdappTheme {
-                if(id == -1) {
-                    ProfileScreen()
-                } else {
-                    MainScreen()
-                }
+                MainScreen(mainViewModel)
+//                LoginScreen()
             }
         }
     }
 }
 
-@Composable
-fun MainScreen() {
 
-}
-
-@Preview(showBackground = true)
+@Preview
 @Composable
-fun ProfileScreenPreview() {
+fun PreviewLogin() {
     ProdappTheme {
-        ProfileScreen()
+        LoginScreen()
     }
 }

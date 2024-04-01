@@ -1,9 +1,11 @@
 package com.example.prodapp.di
 
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.prodapp.viewmodel.LoginViewModel
+import com.example.prodapp.viewmodel.MainViewModel
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val appModule = module {
-    viewModelFactory { LoginViewModel() }
+
+    viewModel<MainViewModel> { MainViewModel(getListAllPublicationsUseCase = get(), getListChannelsUseCase = get()) }
+
 }
