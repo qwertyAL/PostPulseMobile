@@ -2,7 +2,10 @@ package com.example.domain.model
 
 data class PublicationModel(
     val id: Int,
-    val title: String,
+    val channelId: Int,
     val text: String,
-    val time: Long?
+    val comment: String,
+    val scheduledAt: String?,
+    val updatedAt: String,
+    val name: String
 )

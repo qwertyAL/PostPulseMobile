@@ -1,6 +1,5 @@
 package com.example.prodapp.screens
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -18,8 +17,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.outlined.Create
+import androidx.compose.material.icons.outlined.List
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -40,16 +41,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.domain.model.PublicationModel
+import com.example.prodapp.ui.theme.AppTheme
 import com.example.prodapp.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
 
@@ -58,9 +62,6 @@ import kotlinx.coroutines.launch
 fun MainScreen(vm: MainViewModel) {
 
     vm.loadListChannels()
-    vm.loadListAllDraftPublications()
-    vm.loadListAllSentPublications()
-    vm.loadListAllSchedulePublications()
     val items by vm.listChannels.observeAsState()
 
     Surface(
@@ -71,33 +72,65 @@ fun MainScreen(vm: MainViewModel) {
     ) {
         val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
         val scope = rememberCoroutineScope()
-        var selectedItemIndex by rememberSaveable {
+        var channelId by rememberSaveable {
+            mutableIntStateOf(-1)
+        }
+        var tabItem by rememberSaveable {
             mutableIntStateOf(0)
         }
-        var selectedTabItemIndex by rememberSaveable {
-            mutableIntStateOf(0)
-        }
-        val listPublications by vm.publications.observeAsState()
-        vm.loadAllPublication(0)
+        vm.loadPublications(channelId, tabItem)
+//        val listPublications by vm.publications.observeAsState()
+//        val listPublications = emptyList<PublicationModel>()
+//        vm.loadAllPublication(selectedTabItemIndex, if(items != null && items!!.isNotEmpty() && selectedItemIndex != 0) { items?.get(selectedItemIndex - 1)?.id ?: 0 } else { 0 })
         ModalNavigationDrawer(
             drawerContent = {
                 ModalDrawerSheet {
                     Spacer(modifier = Modifier.height(16.dp))
+                    NavigationDrawerItem(
+                        label = {
+                            Text(text = "Все посты")
+                        },
+                        selected = -1 == channelId,
+                        onClick = {
+                            channelId = -1
+                            scope.launch {
+                                drawerState.close()
+                                vm.loadPublications(tabItem, channelId)
+                            }
+                        },
+                        icon = {
+                            Icon(
+                                imageVector = if(-1 == channelId) {
+                                    Icons.Filled.List
+                                } else Icons.Outlined.List,
+                                contentDescription = "Все посты"
+                            )
+                        },
+//                            badge = {
+//                                item.badgeCount?.let {
+//                                    Text(text = item.badgeCount.toString())
+//                                }
+//                            },
+                        modifier = Modifier
+                            .padding(NavigationDrawerItemDefaults.ItemPadding)
+                    )
+
                     items?.forEachIndexed { index, item ->
                         NavigationDrawerItem(
                             label = {
                                 Text(text = item.name)
                             },
-                            selected = index == selectedItemIndex,
+                            selected = index == channelId,
                             onClick = {
-                                selectedItemIndex = index
+                                channelId = index
                                 scope.launch {
                                     drawerState.close()
+                                    vm.loadPublications(tabItem, channelId)
                                 }
                             },
                             icon = {
                                 Icon(
-                                    imageVector = if(index == selectedItemIndex) {
+                                    imageVector = if(index == channelId) {
                                         Icons.Filled.Create
                                     } else Icons.Outlined.Create,
                                     contentDescription = item.name
@@ -109,7 +142,8 @@ fun MainScreen(vm: MainViewModel) {
 //                                }
 //                            },
                             modifier = Modifier
-                                .padding(NavigationDrawerItemDefaults.ItemPadding))
+                                .padding(NavigationDrawerItemDefaults.ItemPadding)
+                        )
                     }
                 }
             },
@@ -120,12 +154,13 @@ fun MainScreen(vm: MainViewModel) {
                     TopAppBar(
                         modifier = Modifier.fillMaxWidth(),
                         title = {
-                            Text(text = items?.get(selectedItemIndex)?.name ?: "")
+                            Text(text = if(items != null && items!!.isNotEmpty() && channelId != -1) {items?.get(channelId)?.name ?: ""} else {"Все посты"})
                         },
                         navigationIcon = {
                             IconButton(onClick = {
                                 scope.launch {
                                     drawerState.open()
+//                                    vm.loadAllPublication(tabItem, channelId)
                                 }
                             } ) {
                                 Icon(imageVector = Icons.Default.Menu, contentDescription = "Menu")
@@ -139,38 +174,38 @@ fun MainScreen(vm: MainViewModel) {
                 ) {
                     TabRow(
                         modifier = Modifier.fillMaxWidth(),
-                        selectedTabIndex = selectedTabItemIndex,
+                        selectedTabIndex = tabItem,
                         tabs = {
                             Tab(
-                                selected = selectedTabItemIndex == 0,
+                                selected = tabItem == 0,
                                 onClick = {
-                                    selectedTabItemIndex = 0
-                                    vm.loadAllPublication(0)
+                                    tabItem = 0
+                                    vm.loadPublications(tabItem, channelId)
                                 },
                                 text = { Text(text = "Отложенные", maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 10.sp) },
                                 icon = { Icon(imageVector = Icons.Default.DateRange, contentDescription = null) }
                             )
                             Tab(
-                                selected = selectedTabItemIndex == 1,
+                                selected = tabItem == 1,
                                 onClick = {
-                                    selectedTabItemIndex = 1
-                                    vm.loadAllPublication(1)
+                                    tabItem = 1
+                                    vm.loadPublications(tabItem, channelId)
                                 },
                                 text = { Text(text = "Черновики", maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 10.sp) },
                                 icon = { Icon(imageVector = Icons.Default.Create, contentDescription = null) }
                             )
                             Tab(
-                                selected = selectedTabItemIndex == 2,
+                                selected = tabItem == 2,
                                 onClick = {
-                                    selectedTabItemIndex = 2
-                                    vm.loadAllPublication(2)
+                                    tabItem = 2
+                                    vm.loadPublications(tabItem, channelId)
                                 },
                                 text = { Text(text = "Отправленные", maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 10.sp) },
                                 icon = { Icon(imageVector = Icons.Default.CheckCircle, contentDescription = null) }
                             )
                         }
                     )
-                    ListPublications(listPublications = listPublications.orEmpty())
+                    ListPublications(vm = vm)
                 }
             }
         }
@@ -183,21 +218,30 @@ fun TabBar() {
 
 }
 
-@Preview
-@Composable
-fun TabPreview() {
-    TabBar()
-}
+//@Preview
+//@Composable
+//fun ItemPreview() {
+//    ItemPublication(PublicationModel(
+//        id = 0,
+//        title = "Церемония награждения",
+//        text = "ука",
+//        time = 0,
+//        channelId = 0
+//    ))
+//}
 
 @Composable
-fun ListPublications(listPublications: List<PublicationModel>) {
+fun ListPublications(vm: MainViewModel) {
+
+    val listPublications by vm.publications.observeAsState()
+
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(16.dp)
     ) {
-        listPublications.forEach {
+        listPublications?.forEach {
             item { ItemPublication(item = it) }
         }
     }
@@ -205,30 +249,44 @@ fun ListPublications(listPublications: List<PublicationModel>) {
 
 @Composable
 fun ItemPublication(item: PublicationModel) {
-    Surface(
-        shape = RoundedCornerShape(5.dp),
-        border = BorderStroke(1.dp, Color.DarkGray)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Text(
-                text = item.title,
-                fontSize = 16.sp
-            )
-            Row(
-                modifier = Modifier.padding(top = 8.dp, bottom = 8.dp)
+    val openDialog = remember {
+        mutableStateOf(false)
+    }
+    if(openDialog.value) {
+        FullInfoDialog(item = item)
+    }
+
+    AppTheme {
+//        Box(
+//            Modifier.background(color = MaterialTheme.colorScheme.background)
+//        ) {
+
+            Surface(
+//                modifier = Modifier.padding(40.dp),
+                shape = RoundedCornerShape(6.dp),
+//                border = BorderStroke(1.dp, Color.DarkGray),
+                shadowElevation = 4.dp,
+                onClick = {
+                    openDialog.value = true
+                }
             ) {
-                Text(text = "31.03.2024 13:00", fontSize = 10.sp, color = Color.DarkGray)
+
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Text(
+                        text = item.name,
+                        fontSize = 16.sp
+                    )
+                    Row(
+                        modifier = Modifier.padding(top = 8.dp, bottom = 8.dp)
+                    ) {
+                        Text(text = "31.03.2024 13:00", fontSize = 10.sp, color = Color.DarkGray)
 //                Text(text = , fontSize = 12.sp, modifier = Modifier.padding(start = 4.dp))
+                    }
+                    Text(minLines = 3, text = item.text, maxLines = 3, fontSize = 10.sp, overflow = TextOverflow.Ellipsis)
+                }
             }
-            Row(
-                modifier = Modifier.padding(bottom = 8.dp)
-            ) {
-                Text(text = "Приоритет: Высокий", fontSize = 10.sp, color = Color.DarkGray)
-//                Text(text = "", fontSize = 12.sp, modifier = Modifier.padding(start = 4.dp))
-            }
-            Text(text = item.text, maxLines = 3, fontSize = 10.sp)
-        }
+//        }
     }
 }

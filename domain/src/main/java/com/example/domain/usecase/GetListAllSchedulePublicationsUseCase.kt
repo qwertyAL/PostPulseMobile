@@ -6,6 +6,6 @@ class GetListAllSchedulePublicationsUseCase(
     private val apiRepository: ApiRepository
 ) {
 
-    suspend fun execute() = apiRepository.getListAllSchedulePublication()
+    suspend fun execute(cookie: String, channelId: Int?) = apiRepository.getListAllSchedulePublication(cookie, channelId)
 
 }

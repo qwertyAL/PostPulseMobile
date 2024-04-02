@@ -6,6 +6,6 @@ class GetListAllSendPublicationsUseCase(
     private val apiRepository: ApiRepository
 ) {
 
-    suspend fun execute() = apiRepository.getListAllSendPublication()
+    suspend fun execute(cookie: String, channelId: Int?) = apiRepository.getListAllSendPublication(cookie, channelId)
 
 }

@@ -34,6 +34,14 @@ android {
 
 dependencies {
 
+    implementation("io.ktor:ktor-client-content-negotiation:2.3.2")
+    implementation("io.ktor:ktor-serialization-gson:2.3.2")
+    implementation("io.ktor:ktor-client-cio:2.3.2")
+
+    implementation("io.ktor:ktor-client-core:2.3.2")
+    implementation("io.ktor:ktor-client-android:2.3.2")
+    implementation("io.ktor:ktor-client-okhttp:2.3.2")
+
     implementation(project(":domain"))
 
     implementation("androidx.core:core-ktx:1.12.0")

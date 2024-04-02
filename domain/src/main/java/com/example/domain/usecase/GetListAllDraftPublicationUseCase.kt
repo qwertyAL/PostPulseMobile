@@ -6,6 +6,6 @@ class GetListAllDraftPublicationUseCase(
     private val apiRepository: ApiRepository
 ) {
 
-    suspend fun execute() = apiRepository.getListAllDraftPublication()
+    suspend fun execute(cookie: String, channelId: Int?) = apiRepository.getListAllDraftPublication(cookie, channelId)
 
 }

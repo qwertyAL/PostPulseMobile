@@ -6,70 +6,68 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.model.ChannelModel
 import com.example.domain.model.PublicationModel
+import com.example.domain.usecase.GetCookieFromLocalSourceUseCase
+import com.example.domain.usecase.GetListAllDraftPublicationUseCase
 import com.example.domain.usecase.GetListAllPublicationsUseCase
+import com.example.domain.usecase.GetListAllSchedulePublicationsUseCase
+import com.example.domain.usecase.GetListAllSendPublicationsUseCase
 import com.example.domain.usecase.GetListChannelsUseCase
 import kotlinx.coroutines.launch
 
 class MainViewModel(
     private val getListAllPublicationsUseCase: GetListAllPublicationsUseCase,
-    private val getListChannelsUseCase: GetListChannelsUseCase
+    private val getListChannelsUseCase: GetListChannelsUseCase,
+    private val getCookieFromLocalSourceUseCase: GetCookieFromLocalSourceUseCase,
+    private val getListAllDraftPublicationUseCase: GetListAllDraftPublicationUseCase,
+    private val getListAllSchedulePublicationsUseCase: GetListAllSchedulePublicationsUseCase,
+    private val getListAllSendPublicationsUseCase: GetListAllSendPublicationsUseCase
 ): ViewModel() {
 
     private val _publications: MutableLiveData<List<PublicationModel>> = MutableLiveData()
     val publications: LiveData<List<PublicationModel>> = _publications
-    fun loadAllPublication(type: Int) {
-        when(type) {
-            0 -> _publications.postValue(listAllSchedulePublications.value)
-            1 -> _publications.postValue(listAllDraftPublications.value)
-            2 -> _publications.postValue(listAllSentPublications.value)
+    fun loadPublications(channelId: Int, tabId: Int) {
+        val cookie = getCookieFromLocalSourceUseCase.execute()
+        if(cookie == "") {
+            _publications.postValue(listOf())
+        } else {
+            when(tabId) {
+                0 -> loadSchedule(cookie, if(channelId == -1) { null } else { channelId })
+                1 -> loadDrafts(cookie, if(channelId == -1) { null } else { channelId })
+                2 -> loadSent(cookie, if(channelId == -1) { null } else { channelId })
+            }
+        }
+    }
+
+    private fun loadDrafts(cookie: String, channelId: Int?) {
+        viewModelScope.launch {
+            _publications.postValue(getListAllDraftPublicationUseCase.execute(cookie = cookie, channelId = channelId))
+        }
+    }
+
+    private fun loadSchedule(cookie: String, channelId: Int?) {
+        viewModelScope.launch {
+            _publications.postValue(getListAllSchedulePublicationsUseCase.execute(cookie = cookie, channelId = channelId))
+        }
+    }
+
+    private fun loadSent(cookie: String, channelId: Int?) {
+        viewModelScope.launch {
+            _publications.postValue(getListAllSendPublicationsUseCase.execute(cookie = cookie, channelId = channelId))
         }
     }
 
     private val _listChannels: MutableLiveData<List<ChannelModel>> = MutableLiveData()
     val listChannels: LiveData<List<ChannelModel>> = _listChannels
     fun loadListChannels() {
-        viewModelScope.launch {
-            _listChannels.postValue(getListChannelsUseCase.execute())
+        val cookie = getCookieFromLocalSourceUseCase.execute()
+        if(cookie == "") _listChannels.postValue(listOf())
+        else {
+            viewModelScope.launch {
+                _listChannels.postValue(getListChannelsUseCase.execute(cookie))
+            }
         }
     }
 
-    private val _listAllDraftPublications: MutableLiveData<List<PublicationModel>> = MutableLiveData()
-    val listAllDraftPublications: LiveData<List<PublicationModel>> = _listAllDraftPublications
-    fun loadListAllDraftPublications() {
-        _listAllDraftPublications.postValue(listOf(
-            PublicationModel(
-            id = 0,
-            title = "черновик",
-            text = "Черновой",
-            time = null
-        )
-        ))
-    }
 
-    private val _listAllSchedulePublications: MutableLiveData<List<PublicationModel>> = MutableLiveData()
-    val listAllSchedulePublications: LiveData<List<PublicationModel>> = _listAllSchedulePublications
-    fun loadListAllSchedulePublications() {
-        _listAllSchedulePublications.postValue(listOf(
-            PublicationModel(
-            id = 0,
-            title = "запланированный",
-            text = "бяка",
-            time = 100
-        )
-        ))
-    }
-
-    private val _listAllSentPublications: MutableLiveData<List<PublicationModel>> = MutableLiveData()
-    val listAllSentPublications: LiveData<List<PublicationModel>> = _listAllSentPublications
-    fun loadListAllSentPublications() {
-        _listAllSentPublications.postValue(listOf(
-            PublicationModel(
-                id = 0,
-                title = "отправленный",
-                text = "бука",
-                time = 50
-            )
-        ))
-    }
 
 }

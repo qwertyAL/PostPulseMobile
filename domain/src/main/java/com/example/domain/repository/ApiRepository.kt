@@ -2,6 +2,7 @@ package com.example.domain.repository
 
 import com.example.domain.model.ChannelModel
 import com.example.domain.model.PublicationModel
+import com.example.domain.model.UserModel
 
 interface ApiRepository {
 
@@ -9,12 +10,13 @@ interface ApiRepository {
 
     suspend fun getPublicationById(id: Int): PublicationModel
 
-    suspend fun getListAllDraftPublication(): List<PublicationModel>
+    suspend fun getListAllDraftPublication(cookie: String, channelId: Int?): List<PublicationModel>
 
-    suspend fun getListAllSendPublication(): List<PublicationModel>
+    suspend fun getListAllSendPublication(cookie: String, channelId: Int?): List<PublicationModel>
 
-    suspend fun getListAllSchedulePublication(): List<PublicationModel>
+    suspend fun getListAllSchedulePublication(cookie: String, channelId: Int?): List<PublicationModel>
 
-    suspend fun getListChannels(): List<ChannelModel>
+    suspend fun getListChannels(cookie: String): List<ChannelModel>
 
+    suspend fun loginUser(authData: String): UserModel?
 }

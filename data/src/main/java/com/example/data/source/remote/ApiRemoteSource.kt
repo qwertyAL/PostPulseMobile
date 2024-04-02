@@ -3,6 +3,7 @@ package com.example.data.source.remote
 import com.example.data.api.Api
 import com.example.domain.model.ChannelModel
 import com.example.domain.model.PublicationModel
+import com.example.domain.model.UserModel
 
 class ApiRemoteSource(
     private val api: Api
@@ -12,12 +13,14 @@ class ApiRemoteSource(
 
     suspend fun getPublicationById(id: Int): PublicationModel = api.getPublicationById(id)
 
-    suspend fun getListAllDraftPublication(): List<PublicationModel> = api.getListAllDraftPublication()
+    suspend fun getListAllDraftPublication(cookie: String, channelId: Int?): List<PublicationModel> = api.getListAllDraftPublication(cookie, channelId)
 
-    suspend fun getListAllSendPublication(): List<PublicationModel> = api.getListAllSendPublication()
+    suspend fun getListAllSendPublication(cookie: String, channelId: Int?): List<PublicationModel> = api.getListAllSendPublication(cookie, channelId)
 
-    suspend fun getListAllSchedulePublication(): List<PublicationModel> = api.getListAllSchedulePublication()
+    suspend fun getListAllSchedulePublication(cookie: String, channelId: Int?): List<PublicationModel> = api.getListAllSchedulePublication(cookie, channelId)
 
-    suspend fun getListChannels(): List<ChannelModel> = api.getListChannels()
+    suspend fun getListChannels(cookie: String): List<ChannelModel> = api.getListChannels(cookie)
+
+    suspend fun loginUser(authData: String): UserModel? = api.loginUser(authData)
 
 }
