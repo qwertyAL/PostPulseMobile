@@ -7,5 +7,6 @@ data class PublicationModel(
     val comment: String,
     val scheduledAt: String?,
     val updatedAt: String,
-    val name: String
+    val name: String,
+    val preview: String
 )

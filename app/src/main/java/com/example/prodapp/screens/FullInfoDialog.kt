@@ -1,5 +1,6 @@
 package com.example.prodapp.screens
 
+import android.util.Log
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.foundation.background
@@ -15,6 +16,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,7 +30,13 @@ import com.example.prodapp.Constants
 @Composable
 fun FullInfoDialog(item: PublicationModel) {
 
-    Dialog(onDismissRequest = {  }) {
+    val shouldDismiss = remember {
+        mutableStateOf(false)
+    }
+
+    if (shouldDismiss.value) return
+
+    Dialog(onDismissRequest = { shouldDismiss.value = true }) {
         Card(
             modifier = Modifier
                 .width(350.dp)
@@ -54,7 +63,8 @@ fun FullInfoDialog(item: PublicationModel) {
                         settings.javaScriptEnabled = true
                         webViewClient = WebViewClient()
 
-                        val url = "prod_final_2024/117"
+                        val url = item.preview.substring(startIndex = 13)
+                        Log.i("TEST_PREV", url)
 
                         val html = """
                                 <head>
@@ -82,5 +92,5 @@ fun FullInfoDialog(item: PublicationModel) {
 @Preview
 @Composable
 fun DialogPreview() {
-    FullInfoDialog(item = PublicationModel(0, 0, "ajflajfjeajliwajdjawdjlajjawli", "test", "3248032", "", "TITLE"))
+    FullInfoDialog(item = PublicationModel(0, 0, "ajflajfjeajliwajdjawdjlajjawli", "test", "3248032", "", "TITLE", preview = ""))
 }

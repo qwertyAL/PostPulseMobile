@@ -137,7 +137,8 @@ class Api {
                             comment = data.asJsonArray.get(i).asJsonObject.get("comment").toString().replace("\"", ""),
                             scheduledAt = data.asJsonArray.get(i).asJsonObject.get("scheduledAt").toString().replace("\"", ""),
                             updatedAt = data.asJsonArray.get(i).asJsonObject.get("updatedAt").toString().replace("\"", ""),
-                            name = data.asJsonArray.get(i).asJsonObject.get("name").toString().replace("\"", "")
+                            name = data.asJsonArray.get(i).asJsonObject.get("name").toString().replace("\"", ""),
+                            preview = data.asJsonArray.get(i).asJsonObject.get("preview").toString().replace("\"", "")
                         ))
                     }
                 }
@@ -169,7 +170,8 @@ class Api {
                             comment = data.asJsonArray.get(i).asJsonObject.get("comment").toString().replace("\"", ""),
                             scheduledAt = data.asJsonArray.get(i).asJsonObject.get("scheduledAt").toString().replace("\"", ""),
                             updatedAt = data.asJsonArray.get(i).asJsonObject.get("updatedAt").toString().replace("\"", ""),
-                            name = data.asJsonArray.get(i).asJsonObject.get("name").toString().replace("\"", "")
+                            name = data.asJsonArray.get(i).asJsonObject.get("name").toString().replace("\"", ""),
+                            preview = data.asJsonArray.get(i).asJsonObject.get("preview").toString().replace("\"", "")
                         ))
                     }
                 }
@@ -202,7 +204,8 @@ class Api {
                             comment = data.asJsonArray.get(i).asJsonObject.get("comment").toString().replace("\"", ""),
                             scheduledAt = data.asJsonArray.get(i).asJsonObject.get("scheduledAt").toString().replace("\"", ""),
                             updatedAt = data.asJsonArray.get(i).asJsonObject.get("updatedAt").toString().replace("\"", ""),
-                            name = data.asJsonArray.get(i).asJsonObject.get("name").toString().replace("\"", "")
+                            name = data.asJsonArray.get(i).asJsonObject.get("name").toString().replace("\"", ""),
+                            preview = data.asJsonArray.get(i).asJsonObject.get("preview").toString().replace("\"", "")
                         ))
                     }
                 }
