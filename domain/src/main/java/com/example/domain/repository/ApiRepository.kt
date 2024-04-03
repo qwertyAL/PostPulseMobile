@@ -10,11 +10,11 @@ interface ApiRepository {
 
     suspend fun getPublicationById(id: Int): PublicationModel
 
-    suspend fun getListAllDraftPublication(cookie: String, channelId: Int?): List<PublicationModel>
+    suspend fun getListAllDraftPublication(cookie: String, channelId: Long?): List<PublicationModel>
 
-    suspend fun getListAllSendPublication(cookie: String, channelId: Int?): List<PublicationModel>
+    suspend fun getListAllSendPublication(cookie: String, channelId: Long?): List<PublicationModel>
 
-    suspend fun getListAllSchedulePublication(cookie: String, channelId: Int?): List<PublicationModel>
+    suspend fun getListAllSchedulePublication(cookie: String, channelId: Long?): List<PublicationModel>
 
     suspend fun getListChannels(cookie: String): List<ChannelModel>
 
@@ -24,7 +24,7 @@ interface ApiRepository {
     suspend fun updatePost(
         cookie: String,
         id: Int,
-        channelId: Int,
+        channelId: Long,
         name: String,
         text: String,
         comment: String,

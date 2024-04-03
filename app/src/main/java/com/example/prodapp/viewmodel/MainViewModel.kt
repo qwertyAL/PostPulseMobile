@@ -1,5 +1,6 @@
 package com.example.prodapp.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -31,34 +32,37 @@ class MainViewModel(
 
     private val _publications: MutableLiveData<List<PublicationModel>> = MutableLiveData()
     val publications: LiveData<List<PublicationModel>> = _publications
-    fun loadPublications(channelId: Int, tabId: Int) {
+    fun loadPublications(channelId: Long, tabId: Int) {
         val cookie = getCookieFromLocalSourceUseCase.execute()
         if(cookie == "") {
             _publications.postValue(listOf())
         } else {
             when(tabId) {
-                0 -> loadSchedule(cookie, if(channelId == -1) { null } else { channelId })
-                1 -> loadDrafts(cookie, if(channelId == -1) { null } else { channelId })
-                2 -> loadSent(cookie, if(channelId == -1) { null } else { channelId })
+                0 -> loadSchedule(cookie, if(channelId == (-1).toLong()) { null } else { channelId })
+                1 -> loadDrafts(cookie, if(channelId == (-1).toLong()) { null } else { channelId })
+                2 -> loadSent(cookie, if(channelId == (-1).toLong()) { null } else { channelId })
             }
         }
     }
 
-    private fun loadDrafts(cookie: String, channelId: Int?) {
+    private fun loadDrafts(cookie: String, channelId: Long?) {
         viewModelScope.launch {
-            _publications.postValue(getListAllDraftPublicationUseCase.execute(cookie = cookie, channelId = channelId))
+            _publications.postValue(getListAllDraftPublicationUseCase.execute(cookie = cookie, channelId = channelId) as List<PublicationModel>?)
         }
     }
 
-    private fun loadSchedule(cookie: String, channelId: Int?) {
+    private fun loadSchedule(cookie: String, channelId: Long?) {
         viewModelScope.launch {
-            _publications.postValue(getListAllSchedulePublicationsUseCase.execute(cookie = cookie, channelId = channelId))
+            Log.i("TEST_BUGS2",
+                getListAllSchedulePublicationsUseCase.execute(cookie = cookie, channelId = channelId).toString()
+            )
+            _publications.postValue(getListAllSchedulePublicationsUseCase.execute(cookie = cookie, channelId = channelId) as List<PublicationModel>?)
         }
     }
 
-    private fun loadSent(cookie: String, channelId: Int?) {
+    private fun loadSent(cookie: String, channelId: Long?) {
         viewModelScope.launch {
-            _publications.postValue(getListAllSendPublicationsUseCase.execute(cookie = cookie, channelId = channelId))
+            _publications.postValue(getListAllSendPublicationsUseCase.execute(cookie = cookie, channelId = channelId) as List<PublicationModel>?)
         }
     }
 
@@ -69,6 +73,7 @@ class MainViewModel(
         if(cookie == "") _listChannels.postValue(listOf())
         else {
             viewModelScope.launch {
+                Log.i("TEST_BUGS", getListChannelsUseCase.execute(cookie).toString())
                 _listChannels.postValue(getListChannelsUseCase.execute(cookie))
             }
         }

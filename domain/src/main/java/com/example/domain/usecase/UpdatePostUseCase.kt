@@ -6,13 +6,14 @@ class UpdatePostUseCase(
     private val apiRepository: ApiRepository
 ) {
 
-    suspend fun execute(cookie: String,
-                        id: Int,
-                        channelId: Int,
-                        name: String,
-                        text: String,
-                        comment: String,
-                        scheduledAt: String) {
+    suspend fun execute(
+        cookie: String,
+        id: Int,
+        channelId: Long,
+        name: String,
+        text: String,
+        comment: String,
+        scheduledAt: String) {
         apiRepository.updatePost(cookie, id, channelId, name, text, comment, scheduledAt)
     }
 

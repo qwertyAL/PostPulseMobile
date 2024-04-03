@@ -6,7 +6,6 @@ import com.example.domain.model.PublicationModel
 import com.example.domain.model.UserModel
 import com.google.gson.JsonElement
 import io.ktor.client.call.body
-import io.ktor.client.request.cookie
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
@@ -106,7 +105,7 @@ class Api {
 
     }
 
-    suspend fun updatePost(cookie: String, id: Int, channelId: Int, name: String, text: String, comment: String, scheduledAt: String?) {
+    suspend fun updatePost(cookie: String, id: Int, channelId: Long, name: String, text: String, comment: String, scheduledAt: String?) {
         try {
             val response = ApiConstants.httpClient.put(ApiConstants.UPDATE_POST_URL) {
                 headers.append(HttpHeaders.Cookie, "session:$cookie")
@@ -117,7 +116,7 @@ class Api {
         }
     }
 
-    suspend fun getListAllDraftPublication(cookie: String, channelId: Int?): List<PublicationModel> {
+    suspend fun getListAllDraftPublication(cookie: String, channelId: Long?): List<PublicationModel> {
 
         try {
             val response = ApiConstants.httpClient.get(ApiConstants.LIST_DRAFTS_URL) {
@@ -133,7 +132,7 @@ class Api {
                     for(i in 0..<data.asJsonArray.size()) {
                         add(PublicationModel(
                             id = data.asJsonArray.get(i).asJsonObject.get("id").toString().toInt(),
-                            channelId = data.asJsonArray.get(i).asJsonObject.get("channelId").toString().toInt(),
+                            channelId = data.asJsonArray.get(i).asJsonObject.get("channelId").toString().toLong(),
                             text = data.asJsonArray.get(i).asJsonObject.get("text").toString().replace("\"", ""),
                             comment = data.asJsonArray.get(i).asJsonObject.get("comment").toString().replace("\"", ""),
                             scheduledAt = data.asJsonArray.get(i).asJsonObject.get("scheduledAt").toString().replace("\"", ""),
@@ -150,7 +149,7 @@ class Api {
         return emptyList()
     }
 
-    suspend fun getListAllSendPublication(cookie: String, channelId: Int?): List<PublicationModel> {
+    suspend fun getListAllSendPublication(cookie: String, channelId: Long?): List<PublicationModel> {
 
         try {
             val response = ApiConstants.httpClient.get(ApiConstants.LIST_SEND_URL) {
@@ -165,7 +164,7 @@ class Api {
                     for(i in 0..<data.asJsonArray.size()) {
                         add(PublicationModel(
                             id = data.asJsonArray.get(i).asJsonObject.get("id").toString().toInt(),
-                            channelId = data.asJsonArray.get(i).asJsonObject.get("channelId").toString().toInt(),
+                            channelId = data.asJsonArray.get(i).asJsonObject.get("channelId").toString().toLong(),
                             text = data.asJsonArray.get(i).asJsonObject.get("text").toString().replace("\"", ""),
                             comment = data.asJsonArray.get(i).asJsonObject.get("comment").toString().replace("\"", ""),
                             scheduledAt = data.asJsonArray.get(i).asJsonObject.get("scheduledAt").toString().replace("\"", ""),
@@ -182,7 +181,7 @@ class Api {
         return emptyList()
     }
 
-    suspend fun getListAllSchedulePublication(cookie: String, channelId: Int?): List<PublicationModel> {
+    suspend fun getListAllSchedulePublication(cookie: String, channelId: Long?): List<PublicationModel> {
 
         try {
             val response = ApiConstants.httpClient.get(ApiConstants.LIST_SCHEDULE_URL) {
@@ -190,7 +189,7 @@ class Api {
                 parameter("channelId", channelId)
             }
 
-            Log.i("TEST_CHANNELS", channelId.toString())
+            Log.i("TEST_CHANNELS_ID", channelId.toString())
             if(response.status.value in (200..299)) {
                 val data = response.body<JsonElement>()
                 Log.i("TEST_SCHEDULE", data.toString())
@@ -198,7 +197,7 @@ class Api {
                     for(i in 0..<data.asJsonArray.size()) {
                         add(PublicationModel(
                             id = data.asJsonArray.get(i).asJsonObject.get("id").toString().toInt(),
-                            channelId = data.asJsonArray.get(i).asJsonObject.get("channelId").toString().toInt(),
+                            channelId = data.asJsonArray.get(i).asJsonObject.get("channelId").toString().toLong(),
                             text = data.asJsonArray.get(i).asJsonObject.get("text").toString().replace("\"", ""),
                             comment = data.asJsonArray.get(i).asJsonObject.get("comment").toString().replace("\"", ""),
                             scheduledAt = data.asJsonArray.get(i).asJsonObject.get("scheduledAt").toString().replace("\"", ""),
@@ -218,27 +217,38 @@ class Api {
     suspend fun getListChannels(cookie: String): List<ChannelModel> {
         try {
             val response = ApiConstants.httpClient.get(ApiConstants.LIST_CHANNELS_URL) {
-//                headers.append(HttpHeaders.Cookie, "session=$cookie;")
-                cookie(name = "session", cookie)
+                headers.append(HttpHeaders.Cookie, "session=$cookie;")
+//                cookie(name = "session", cookie)
             }
-            Log.i("TEST_CHANNELS", cookie)
+            Log.i("TEST_COOKIE", cookie)
             if(response.status.value in (200..299)) {
                 val data = response.body<JsonElement>()
-                Log.i("TEST_CHANNELS", data.toString())
+                Log.i("TEST_CHANNELS2", buildList {
+                    for(i in 0..<data.asJsonArray.size()) {
+                        add(ChannelModel(
+                            id = data.asJsonArray.get(i).asJsonObject.get("id").toString().toLong(),
+                            name = data.asJsonArray.get(i).asJsonObject.get("name").toString().replace("\"", "")
+                        ))
+                    }
+                }.toString())
                 return buildList {
                     for(i in 0..<data.asJsonArray.size()) {
                         add(ChannelModel(
-                            id = data.asJsonArray.get(i).asJsonObject.get("id").toString().toInt(),
+                            id = data.asJsonArray.get(i).asJsonObject.get("id").toString().toLong(),
                             name = data.asJsonArray.get(i).asJsonObject.get("name").toString().replace("\"", "")
                         ))
                     }
                 }
             }
+//            else {
+////                Log.i("TEST_CHANNELS", )
+//            }
             else {
-                Log.i("TEST_CHANNELS", response.status.value.toString())
+                Log.i("TEST_CHANNELS3", response.status.value.toString())
             }
             return emptyList()
         } catch (e: Exception) {
+            Log.i("TEST_CHANNELS4", e.toString())
             return emptyList()
         }
     }

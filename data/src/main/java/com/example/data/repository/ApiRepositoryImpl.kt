@@ -1,7 +1,6 @@
 package com.example.data.repository
 
 import android.util.Log
-import com.example.data.api.Api
 import com.example.domain.model.PublicationModel
 import com.example.data.source.local.ApiLocalSource
 import com.example.data.source.remote.ApiRemoteSource
@@ -25,11 +24,11 @@ class ApiRepositoryImpl(
         return res
     }
 
-    override suspend fun getListAllDraftPublication(cookie: String, channelId: Int?): List<PublicationModel> = apiRemoteSource.getListAllDraftPublication(cookie, channelId)
+    override suspend fun getListAllDraftPublication(cookie: String, channelId: Long?): List<PublicationModel> = apiRemoteSource.getListAllDraftPublication(cookie, channelId)
 
-    override suspend fun getListAllSendPublication(cookie: String, channelId: Int?): List<PublicationModel> = apiRemoteSource.getListAllSendPublication(cookie, channelId)
+    override suspend fun getListAllSendPublication(cookie: String, channelId: Long?): List<PublicationModel> = apiRemoteSource.getListAllSendPublication(cookie, channelId)
 
-    override suspend fun getListAllSchedulePublication(cookie: String, channelId: Int?): List<PublicationModel> = apiRemoteSource.getListAllSchedulePublication(cookie, channelId)
+    override suspend fun getListAllSchedulePublication(cookie: String, channelId: Long?): List<PublicationModel> = apiRemoteSource.getListAllSchedulePublication(cookie, channelId)
 
     override suspend fun getListChannels(cookie: String): List<ChannelModel> = apiRemoteSource.getListChannels(cookie)
 
@@ -46,7 +45,7 @@ class ApiRepositoryImpl(
         apiRemoteSource.sendToken(token, cookie)
     }
 
-    override suspend fun updatePost(cookie: String, id: Int, channelId: Int, name: String, text: String, comment: String, scheduledAt: String) {
+    override suspend fun updatePost(cookie: String, id: Int, channelId: Long, name: String, text: String, comment: String, scheduledAt: String) {
         apiRemoteSource.updatePost(cookie, id, channelId, name, text, comment, scheduledAt)
     }
 
