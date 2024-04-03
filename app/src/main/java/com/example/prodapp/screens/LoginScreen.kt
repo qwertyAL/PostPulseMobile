@@ -7,11 +7,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.navigation.NavController
 import com.example.prodapp.JavascriptInterface
 import com.example.prodapp.viewmodel.LoginViewModel
 
 @Composable
-fun LoginScreen(vm: LoginViewModel, function: () -> Unit) {
+fun LoginScreen(vm: LoginViewModel) {
 
     val html = """
         <body style="width: 100%; height: 100%; display: flex; justify-content: center; align-items: center">
@@ -26,7 +27,7 @@ fun LoginScreen(vm: LoginViewModel, function: () -> Unit) {
             settings.javaScriptEnabled = true
             webViewClient = WebViewClient()
             webChromeClient = WebChromeClient()
-            addJavascriptInterface(JavascriptInterface(vm) { function }, "test")
+            addJavascriptInterface(JavascriptInterface(vm), "mobileAuthDataReceiver")
 
 //            loadData(html, "text/html", "utf-8")
             loadUrl("http://post-pulse.ru/mobile_auth")

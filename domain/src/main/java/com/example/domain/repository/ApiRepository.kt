@@ -19,4 +19,15 @@ interface ApiRepository {
     suspend fun getListChannels(cookie: String): List<ChannelModel>
 
     suspend fun loginUser(authData: String): UserModel?
+
+    suspend fun sendToken(token: String, cookie: String)
+    suspend fun updatePost(
+        cookie: String,
+        id: Int,
+        channelId: Int,
+        name: String,
+        text: String,
+        comment: String,
+        scheduledAt: String
+    )
 }

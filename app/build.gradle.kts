@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -59,6 +60,8 @@ dependencies {
     implementation("io.insert-koin:koin-core:3.2.2")
     implementation("io.insert-koin:koin-android:3.2.2")
 
+    implementation("androidx.compose.ui:ui-text-google-fonts:1.6.1")
+
     implementation("androidx.compose.runtime:runtime-livedata:1.6.4")
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
@@ -77,4 +80,7 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+    implementation(platform("com.google.firebase:firebase-bom:32.8.0"))
+    implementation("com.google.firebase:firebase-messaging")
 }

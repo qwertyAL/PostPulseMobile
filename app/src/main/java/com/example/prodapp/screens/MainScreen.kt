@@ -1,5 +1,8 @@
 package com.example.prodapp.screens
 
+import android.content.res.Resources.Theme
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -14,6 +17,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.DateRange
@@ -46,16 +50,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.googlefonts.Font
+import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.domain.model.PublicationModel
+import com.example.prodapp.R
 import com.example.prodapp.ui.theme.AppTheme
 import com.example.prodapp.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
+import com.example.prodapp.Constants
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -75,6 +88,9 @@ fun MainScreen(vm: MainViewModel) {
         var channelId by rememberSaveable {
             mutableIntStateOf(-1)
         }
+        var channelIndex by rememberSaveable {
+            mutableIntStateOf(-1)
+        }
         var tabItem by rememberSaveable {
             mutableIntStateOf(0)
         }
@@ -85,22 +101,29 @@ fun MainScreen(vm: MainViewModel) {
         ModalNavigationDrawer(
             drawerContent = {
                 ModalDrawerSheet {
+                    Column(
+                        modifier = Modifier.background(color = MaterialTheme.colorScheme.primary).padding(top = 30.dp, bottom = 30.dp).fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = vm.getUsername(), color = Color.White)
+                    }
                     Spacer(modifier = Modifier.height(16.dp))
                     NavigationDrawerItem(
                         label = {
                             Text(text = "Все посты")
                         },
-                        selected = -1 == channelId,
+                        selected = -1 == channelIndex,
                         onClick = {
+                            channelIndex = -1
                             channelId = -1
                             scope.launch {
                                 drawerState.close()
-                                vm.loadPublications(tabItem, channelId)
+                                vm.loadPublications(channelId, tabItem)
                             }
                         },
                         icon = {
                             Icon(
-                                imageVector = if(-1 == channelId) {
+                                imageVector = if(-1 == channelIndex) {
                                     Icons.Filled.List
                                 } else Icons.Outlined.List,
                                 contentDescription = "Все посты"
@@ -120,17 +143,18 @@ fun MainScreen(vm: MainViewModel) {
                             label = {
                                 Text(text = item.name)
                             },
-                            selected = index == channelId,
+                            selected = index == channelIndex,
                             onClick = {
-                                channelId = index
+                                channelIndex = index
+                                channelId = item.id
                                 scope.launch {
                                     drawerState.close()
-                                    vm.loadPublications(tabItem, channelId)
+                                    vm.loadPublications(channelId, tabItem)
                                 }
                             },
                             icon = {
                                 Icon(
-                                    imageVector = if(index == channelId) {
+                                    imageVector = if(index == channelIndex) {
                                         Icons.Filled.Create
                                     } else Icons.Outlined.Create,
                                     contentDescription = item.name
@@ -154,7 +178,7 @@ fun MainScreen(vm: MainViewModel) {
                     TopAppBar(
                         modifier = Modifier.fillMaxWidth(),
                         title = {
-                            Text(text = if(items != null && items!!.isNotEmpty() && channelId != -1) {items?.get(channelId)?.name ?: ""} else {"Все посты"})
+                            Text(text = if(items != null && items!!.isNotEmpty() && channelIndex != -1) {items?.get(channelIndex)?.name ?: ""} else {"Все посты"})
                         },
                         navigationIcon = {
                             IconButton(onClick = {
@@ -180,7 +204,7 @@ fun MainScreen(vm: MainViewModel) {
                                 selected = tabItem == 0,
                                 onClick = {
                                     tabItem = 0
-                                    vm.loadPublications(tabItem, channelId)
+                                    vm.loadPublications(channelId, tabItem)
                                 },
                                 text = { Text(text = "Отложенные", maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 10.sp) },
                                 icon = { Icon(imageVector = Icons.Default.DateRange, contentDescription = null) }
@@ -189,7 +213,7 @@ fun MainScreen(vm: MainViewModel) {
                                 selected = tabItem == 1,
                                 onClick = {
                                     tabItem = 1
-                                    vm.loadPublications(tabItem, channelId)
+                                    vm.loadPublications(channelId, tabItem)
                                 },
                                 text = { Text(text = "Черновики", maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 10.sp) },
                                 icon = { Icon(imageVector = Icons.Default.Create, contentDescription = null) }
@@ -198,7 +222,7 @@ fun MainScreen(vm: MainViewModel) {
                                 selected = tabItem == 2,
                                 onClick = {
                                     tabItem = 2
-                                    vm.loadPublications(tabItem, channelId)
+                                    vm.loadPublications(channelId, tabItem)
                                 },
                                 text = { Text(text = "Отправленные", maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 10.sp) },
                                 icon = { Icon(imageVector = Icons.Default.CheckCircle, contentDescription = null) }
@@ -223,10 +247,12 @@ fun TabBar() {
 //fun ItemPreview() {
 //    ItemPublication(PublicationModel(
 //        id = 0,
-//        title = "Церемония награждения",
-//        text = "ука",
-//        time = 0,
-//        channelId = 0
+//        channelId = 0,
+//        text = "GSLNGLSENLLIESJFLIEJLFIJSLIJLSIEJFLIJEIFJLESIJFLISEJFLIJSELIFJLIESJFLISEJFLIJSEFLIJSLJFLIJSEFLIJSLIFJILEJFLISEJFLIFJSLEIFJLISEFJLISJEFLI",
+//        comment = "SJLGJESIFJ",
+//        scheduledAt = "0423i4p9",
+//        updatedAt = "alfokf",
+//        name = "aoda;f;esmlkeflknselnlsenflnesfnsfnl"
 //    ))
 //}
 
@@ -242,13 +268,13 @@ fun ListPublications(vm: MainViewModel) {
         contentPadding = PaddingValues(16.dp)
     ) {
         listPublications?.forEach {
-            item { ItemPublication(item = it) }
+            item { ItemPublication(item = it, vm) }
         }
     }
 }
 
 @Composable
-fun ItemPublication(item: PublicationModel) {
+fun ItemPublication(item: PublicationModel, vm: MainViewModel) {
     val openDialog = remember {
         mutableStateOf(false)
     }
@@ -274,17 +300,39 @@ fun ItemPublication(item: PublicationModel) {
                 Column(
                     modifier = Modifier.padding(16.dp)
                 ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(text = item.comment,
+                            Modifier
+                                .background(color = Color.Blue, shape = RoundedCornerShape(4.dp))
+                                .padding(4.dp),
+                            color = Color.White,
+                            fontFamily = Constants.fontMedium
+                        )
+                        if(item.scheduledAt != null && item.scheduledAt != "null") {
+                            IconButton(onClick = {
+                                vm.updatePost(item)
+                            }, ) {
+                                Icon(imageVector = Icons.Default.Build, contentDescription = null)
+                            }
+                        }
+                    }
                     Text(
                         text = item.name,
-                        fontSize = 16.sp
+                        fontSize = 16.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        fontFamily = Constants.fontBold
                     )
                     Row(
                         modifier = Modifier.padding(top = 8.dp, bottom = 8.dp)
                     ) {
-                        Text(text = "31.03.2024 13:00", fontSize = 10.sp, color = Color.DarkGray)
+                        Text(text = if(item.scheduledAt == "null") {"Не запланировано"} else {item.scheduledAt!!},
+                            fontSize = 10.sp, color = Color.DarkGray, fontFamily = Constants.fontRegular)
 //                Text(text = , fontSize = 12.sp, modifier = Modifier.padding(start = 4.dp))
                     }
-                    Text(minLines = 3, text = item.text, maxLines = 3, fontSize = 10.sp, overflow = TextOverflow.Ellipsis)
+                    Text(minLines = 3, text = item.text, maxLines = 3, fontSize = 10.sp, overflow = TextOverflow.Ellipsis, fontFamily = Constants.fontRegular)
                 }
             }
 //        }

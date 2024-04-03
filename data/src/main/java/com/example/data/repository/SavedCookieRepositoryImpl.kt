@@ -11,4 +11,15 @@ class SavedCookieRepositoryImpl (
     }
 
     override fun getCookie(): String = cookieLocalStore.getCookie()
+    override fun setToken(token: String) {
+        cookieLocalStore.setToken(token)
+    }
+
+    override fun getToken(): String = cookieLocalStore.getToken()
+
+    override fun setUsername(name: String) {
+        cookieLocalStore.setUsername(name)
+    }
+
+    override fun getUsername() = cookieLocalStore.getUsername()
 }

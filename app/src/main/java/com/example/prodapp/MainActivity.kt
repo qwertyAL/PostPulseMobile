@@ -34,14 +34,16 @@ class MainActivity : ComponentActivity() {
             AppTheme {
                 val navController = rememberNavController()
                 val startScreen = if(getSavedCookieToLocalSourceUseCase.execute() != "") { "main_screen" } else { "login_screen" }
+                loginViewModel.initUnit {
+                    navController.navigate("main_screen")
+                    Log.i("TEST_ROUTE", "TRUE")
+                }
                 NavHost(navController = navController, startDestination = startScreen) {
                     composable("main_screen") {
                         MainScreen(vm = mainViewModel)
                     }
                     composable("login_screen") {
-                        LoginScreen(vm = loginViewModel) {
-                            navController.navigate("main_screen")
-                        }
+                        LoginScreen(vm = loginViewModel)
                     }
                 }
             }

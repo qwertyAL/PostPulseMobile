@@ -12,6 +12,8 @@ import com.example.domain.usecase.GetListAllPublicationsUseCase
 import com.example.domain.usecase.GetListAllSchedulePublicationsUseCase
 import com.example.domain.usecase.GetListAllSendPublicationsUseCase
 import com.example.domain.usecase.GetListChannelsUseCase
+import com.example.domain.usecase.GetUsernameUseCase
+import com.example.domain.usecase.UpdatePostUseCase
 import kotlinx.coroutines.launch
 
 class MainViewModel(
@@ -20,8 +22,12 @@ class MainViewModel(
     private val getCookieFromLocalSourceUseCase: GetCookieFromLocalSourceUseCase,
     private val getListAllDraftPublicationUseCase: GetListAllDraftPublicationUseCase,
     private val getListAllSchedulePublicationsUseCase: GetListAllSchedulePublicationsUseCase,
-    private val getListAllSendPublicationsUseCase: GetListAllSendPublicationsUseCase
+    private val getListAllSendPublicationsUseCase: GetListAllSendPublicationsUseCase,
+    private val updatePostUseCase: UpdatePostUseCase,
+    private val getUsernameUseCase: GetUsernameUseCase
 ): ViewModel() {
+
+    fun getUsername() = getUsernameUseCase.execute()
 
     private val _publications: MutableLiveData<List<PublicationModel>> = MutableLiveData()
     val publications: LiveData<List<PublicationModel>> = _publications
@@ -68,6 +74,14 @@ class MainViewModel(
         }
     }
 
-
+    fun updatePost(post: PublicationModel) {
+        val cookie = getCookieFromLocalSourceUseCase.execute()
+        if(cookie != "") {
+            viewModelScope.launch {
+                updatePostUseCase.execute(cookie, post.id, post.channelId, post.name, post.text, post.comment, "null")
+            }
+        }
+        loadListChannels()
+    }
 
 }

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "584827770818",
+    "project_id": "postpulsefcm",
+    "storage_bucket": "postpulsefcm.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:584827770818:android:e5c5238c348064148be85b",
+        "android_client_info": {
+          "package_name": "com.example.prodapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8YnyaRABpL2SvGj1mooL5LnKiS7fzdNU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

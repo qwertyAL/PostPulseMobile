@@ -9,6 +9,8 @@ import io.ktor.client.call.body
 import io.ktor.client.request.cookie
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
+import io.ktor.client.request.post
+import io.ktor.client.request.put
 import io.ktor.client.request.request
 import io.ktor.client.request.setBody
 import io.ktor.client.request.url
@@ -91,6 +93,30 @@ class Api {
 
     suspend fun getPublicationById(id: Int): PublicationModel = allPublication[id]
 
+    suspend fun sendMobileToken(token: String, cookie: String) {
+        try {
+            val response = ApiConstants.httpClient.post(ApiConstants.SENT_MOBILE_TOKEN_URL) {
+                headers.append(HttpHeaders.Cookie, "session=$cookie")
+                setBody("{ \"token\": \"$token\" }")
+//                parameter("token", token)
+            }
+        } catch (e: Exception) {
+            Log.i("SEND_TOKEN", e.toString())
+        }
+
+    }
+
+    suspend fun updatePost(cookie: String, id: Int, channelId: Int, name: String, text: String, comment: String, scheduledAt: String?) {
+        try {
+            val response = ApiConstants.httpClient.put(ApiConstants.UPDATE_POST_URL) {
+                headers.append(HttpHeaders.Cookie, "session:$cookie")
+                setBody("{ \"id\": \"$id\", \"channelId\": \"$channelId\", \"name\": \"$name\", \"text\": \"$text\", \"comment\": \"$comment\" }")
+            }
+        } catch (e: Exception) {
+            Log.i("TEST_UPDATE", e.toString())
+        }
+    }
+
     suspend fun getListAllDraftPublication(cookie: String, channelId: Int?): List<PublicationModel> {
 
         try {
@@ -98,10 +124,24 @@ class Api {
                 headers.append(HttpHeaders.Cookie, "session=$cookie;")
                 parameter("channelId", channelId)
             }
+            Log.i("TEST_PUBLICATIONS", channelId.toString())
 
             if(response.status.value in (200..299)) {
                 val data = response.body<JsonElement>()
                 Log.i("TEST_DRAFTS", data.toString())
+                return buildList {
+                    for(i in 0..<data.asJsonArray.size()) {
+                        add(PublicationModel(
+                            id = data.asJsonArray.get(i).asJsonObject.get("id").toString().toInt(),
+                            channelId = data.asJsonArray.get(i).asJsonObject.get("channelId").toString().toInt(),
+                            text = data.asJsonArray.get(i).asJsonObject.get("text").toString().replace("\"", ""),
+                            comment = data.asJsonArray.get(i).asJsonObject.get("comment").toString().replace("\"", ""),
+                            scheduledAt = data.asJsonArray.get(i).asJsonObject.get("scheduledAt").toString().replace("\"", ""),
+                            updatedAt = data.asJsonArray.get(i).asJsonObject.get("updatedAt").toString().replace("\"", ""),
+                            name = data.asJsonArray.get(i).asJsonObject.get("name").toString().replace("\"", "")
+                        ))
+                    }
+                }
             }
         } catch (e: Exception) {
             Log.i("TEST_DRAFTS", e.toString())
@@ -113,7 +153,7 @@ class Api {
     suspend fun getListAllSendPublication(cookie: String, channelId: Int?): List<PublicationModel> {
 
         try {
-            val response = ApiConstants.httpClient.get(ApiConstants.LIST_DRAFTS_URL) {
+            val response = ApiConstants.httpClient.get(ApiConstants.LIST_SEND_URL) {
                 headers.append(HttpHeaders.Cookie, "session=$cookie;")
                 parameter("channelId", channelId)
             }
@@ -121,6 +161,19 @@ class Api {
             if(response.status.value in (200..299)) {
                 val data = response.body<JsonElement>()
                 Log.i("TEST_DRAFTS", data.toString())
+                return buildList {
+                    for(i in 0..<data.asJsonArray.size()) {
+                        add(PublicationModel(
+                            id = data.asJsonArray.get(i).asJsonObject.get("id").toString().toInt(),
+                            channelId = data.asJsonArray.get(i).asJsonObject.get("channelId").toString().toInt(),
+                            text = data.asJsonArray.get(i).asJsonObject.get("text").toString().replace("\"", ""),
+                            comment = data.asJsonArray.get(i).asJsonObject.get("comment").toString().replace("\"", ""),
+                            scheduledAt = data.asJsonArray.get(i).asJsonObject.get("scheduledAt").toString().replace("\"", ""),
+                            updatedAt = data.asJsonArray.get(i).asJsonObject.get("updatedAt").toString().replace("\"", ""),
+                            name = data.asJsonArray.get(i).asJsonObject.get("name").toString().replace("\"", "")
+                        ))
+                    }
+                }
             }
         } catch (e: Exception) {
             Log.i("TEST_DRAFTS", e.toString())
@@ -132,26 +185,15 @@ class Api {
     suspend fun getListAllSchedulePublication(cookie: String, channelId: Int?): List<PublicationModel> {
 
         try {
-            val response = ApiConstants.httpClient.get(ApiConstants.LIST_DRAFTS_URL) {
+            val response = ApiConstants.httpClient.get(ApiConstants.LIST_SCHEDULE_URL) {
                 headers.append(HttpHeaders.Cookie, "session=$cookie;")
                 parameter("channelId", channelId)
             }
 
+            Log.i("TEST_CHANNELS", channelId.toString())
             if(response.status.value in (200..299)) {
                 val data = response.body<JsonElement>()
-                Log.i("TEST_DRAFTS", buildList {
-                    for(i in 0..<data.asJsonArray.size()) {
-                        add(PublicationModel(
-                            id = data.asJsonArray.get(i).asJsonObject.get("id").toString().toInt(),
-                            channelId = data.asJsonArray.get(i).asJsonObject.get("channelId").toString().toInt(),
-                            text = data.asJsonArray.get(i).asJsonObject.get("text").toString(),
-                            comment = data.asJsonArray.get(i).asJsonObject.get("comment").toString(),
-                            scheduledAt = data.asJsonArray.get(i).asJsonObject.get("scheduledAt").toString(),
-                            updatedAt = data.asJsonArray.get(i).asJsonObject.get("updatedAt").toString(),
-                            name = data.asJsonArray.get(i).asJsonObject.get("name").toString()
-                        ))
-                    }
-            }.toString())
+                Log.i("TEST_SCHEDULE", data.toString())
                 return buildList {
                     for(i in 0..<data.asJsonArray.size()) {
                         add(PublicationModel(

@@ -23,4 +23,12 @@ class ApiRemoteSource(
 
     suspend fun loginUser(authData: String): UserModel? = api.loginUser(authData)
 
+    suspend fun sendToken(token: String, cookie: String) {
+        api.sendMobileToken(token, cookie)
+    }
+
+    suspend fun updatePost(cookie: String, id: Int, channelId: Int, name: String, text: String, comment: String, scheduledAt: String?) {
+        api.updatePost(cookie, id, channelId, name, text, comment, scheduledAt)
+    }
+
 }

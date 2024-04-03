@@ -42,4 +42,12 @@ class ApiRepositoryImpl(
         return userModel
     }
 
+    override suspend fun sendToken(token: String, cookie: String) {
+        apiRemoteSource.sendToken(token, cookie)
+    }
+
+    override suspend fun updatePost(cookie: String, id: Int, channelId: Int, name: String, text: String, comment: String, scheduledAt: String) {
+        apiRemoteSource.updatePost(cookie, id, channelId, name, text, comment, scheduledAt)
+    }
+
 }
