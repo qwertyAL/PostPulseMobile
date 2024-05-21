@@ -1,7 +1,7 @@
 package com.example.prodapp.screens.newinterface
 
-import android.widget.Space
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +15,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -97,34 +100,84 @@ fun SearchView() {
 }
 
 @Composable
+fun SpacerChannels() {
+    Row(
+        modifier = Modifier.padding(top = 1.dp, bottom = 1.dp)
+    ) {
+        Spacer(modifier = Modifier.width(32.dp))
+        Spacer(modifier = Modifier
+            .height(1.dp)
+            .background(color = Color(0xFFD9D9D9))
+            .weight(1F))
+        Spacer(modifier = Modifier.width(32.dp))
+    }
+}
+
+@Composable
 fun ChannelsList() {
     LazyColumn {
+        item {
+            Channel(isFavorite = true, isAllChannel = true)
+            SpacerChannels()
+        }
+        item {
+            Channel(isFavorite = true, isAllChannel = false)
+            SpacerChannels()
+        }
         items(10) {
-            Channel()
-            Spacer(modifier = Modifier.height(1.dp).background(color = Color(0xFFD9D9D9)).padding(start = 32.dp, end = 32.dp).fillMaxWidth())
+            Channel(isFavorite = false, isAllChannel = false)
+            SpacerChannels()
         }
     }
 }
 
 @Composable
-fun Channel() {
+fun Channel(isFavorite: Boolean, isAllChannel: Boolean) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp)
     ) {
-        Icon(imageVector = Icons.Default.AccountCircle, contentDescription = null, tint = Color(0xFFD9D9D9), modifier = Modifier
-            .width(60.dp)
-            .height(60.dp))
+        if(isAllChannel) {
+            Icon(imageVector = Icons.Default.List, contentDescription = null, tint = Color(0xFF007AFF), modifier = Modifier
+                .width(60.dp)
+                .height(60.dp))
+        } else {
+            Icon(imageVector = Icons.Default.AccountCircle, contentDescription = null, tint = Color(0xFFD9D9D9), modifier = Modifier
+                .width(60.dp)
+                .height(60.dp))
+        }
         Column(
             modifier = Modifier
                 .padding(start = 8.dp)
                 .weight(1F)
         ) {
-            Text(text = "Title", fontSize = 16.sp, fontWeight = FontWeight.Medium, color = Color(0xFF000000))
+            if(isAllChannel) {
+                Text(text = "All channels", fontSize = 16.sp, fontWeight = FontWeight.Medium, color = Color(0xFF000000))
+            } else {
+                Text(text = "Title", fontSize = 16.sp, fontWeight = FontWeight.Medium, color = Color(0xFF000000))
+            }
             Text(text = "last post name", fontSize = 15.sp, fontWeight = FontWeight.Normal, color = Color(0xFFC5C5C7))
         }
-        Text(text = "09/29", fontSize = 14.sp, fontWeight = FontWeight.Normal, color = Color(0xFFC5C5C7))
+        Column(
+            horizontalAlignment = Alignment.End
+        ) {
+            Text(text = "09/29", fontSize = 14.sp, fontWeight = FontWeight.Normal, color = Color(0xFFC5C5C7))
+            if(!isAllChannel) {
+                IconButton(
+                    onClick = { /*TODO*/ },
+                    modifier = Modifier
+                        .width(20.dp)
+                        .height(20.dp)
+                ) {
+                    if(isFavorite) {
+                        Icon(imageVector = Icons.Default.Favorite, contentDescription = null, tint = Color(0xFF007AFF))
+                    } else {
+                        Icon(imageVector = Icons.Default.FavoriteBorder, contentDescription = null, tint = Color(0xFFC5C5C7))
+                    }
+                }
+            }
+        }
     }
 }
 
