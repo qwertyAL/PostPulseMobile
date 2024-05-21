@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
@@ -21,7 +20,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.SearchBar
-import androidx.compose.material3.SearchBarColors
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -103,7 +101,7 @@ fun ChannelsList() {
     LazyColumn {
         items(10) {
             Channel()
-            Spacer(modifier = Modifier.height(1.dp).width(296.dp).background(color = Color(0xFFD9D9D9)))
+            Spacer(modifier = Modifier.height(1.dp).background(color = Color(0xFFD9D9D9)).padding(start = 32.dp, end = 32.dp).fillMaxWidth())
         }
     }
 }
