@@ -11,6 +11,7 @@ import com.example.data.api.Api
 import com.example.domain.usecase.GetCookieFromLocalSourceUseCase
 import com.example.prodapp.screens.LoginScreen
 import com.example.prodapp.screens.MainScreen
+import com.example.prodapp.screens.newinterface.ChannelScreen
 import com.example.prodapp.ui.theme.AppTheme
 import com.example.prodapp.viewmodel.LoginViewModel
 import com.example.prodapp.viewmodel.MainViewModel
@@ -33,19 +34,23 @@ class MainActivity : ComponentActivity() {
         setContent {
             AppTheme {
                 val navController = rememberNavController()
-                val startScreen = if(getSavedCookieToLocalSourceUseCase.execute() != "") { "main_screen" } else { "login_screen" }
-                loginViewModel.initUnit {
-                    navController.navigate("main_screen")
-                    Log.i("TEST_ROUTE", "TRUE")
-                }
+//                val startScreen = if(getSavedCookieToLocalSourceUseCase.execute() != "") { "main_screen" } else { "login_screen" }
+                val startScreen = "main_screen"
+//                loginViewModel.initUnit {
+//                    navController.navigate("main_screen")
+//                    Log.i("TEST_ROUTE", "TRUE")
+//                }
                 NavHost(navController = navController, startDestination = startScreen) {
                     composable("main_screen") {
-                        MainScreen(vm = mainViewModel)
+                        com.example.prodapp.screens.newinterface.MainScreen() {
+                            navController.navigate("channel_screen")
+                        }
                     }
-                    composable("login_screen") {
-                        LoginScreen(vm = loginViewModel)
+                    composable("channel_screen") {
+                        ChannelScreen()
                     }
                 }
+//                com.example.prodapp.screens.newinterface.MainScreen()
             }
         }
     }

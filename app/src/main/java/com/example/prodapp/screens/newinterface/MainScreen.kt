@@ -1,7 +1,7 @@
 package com.example.prodapp.screens.newinterface
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun MainScreen() {
+fun MainScreen(unit: () -> Unit) {
 
     Column(
         modifier = Modifier
@@ -71,7 +71,7 @@ fun MainScreen() {
         }
         SearchView()
         Spacer(modifier = Modifier.height(16.dp))
-        ChannelsList()
+        ChannelsList(unit)
     }
 
 }
@@ -114,29 +114,30 @@ fun SpacerChannels() {
 }
 
 @Composable
-fun ChannelsList() {
+fun ChannelsList(unit: () -> Unit) {
     LazyColumn {
         item {
-            Channel(isFavorite = true, isAllChannel = true)
+            Channel(isFavorite = true, isAllChannel = true, unit = unit)
             SpacerChannels()
         }
         item {
-            Channel(isFavorite = true, isAllChannel = false)
+            Channel(isFavorite = true, isAllChannel = false, unit = unit)
             SpacerChannels()
         }
         items(10) {
-            Channel(isFavorite = false, isAllChannel = false)
+            Channel(isFavorite = false, isAllChannel = false, unit = unit)
             SpacerChannels()
         }
     }
 }
 
 @Composable
-fun Channel(isFavorite: Boolean, isAllChannel: Boolean) {
+fun Channel(isFavorite: Boolean, isAllChannel: Boolean, unit: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp)
+            .clickable { unit() }
     ) {
         if(isAllChannel) {
             Icon(imageVector = Icons.Default.List, contentDescription = null, tint = Color(0xFF007AFF), modifier = Modifier
@@ -184,5 +185,5 @@ fun Channel(isFavorite: Boolean, isAllChannel: Boolean) {
 @Composable
 @Preview
 fun PreviewMainScreen() {
-    MainScreen()
+    MainScreen() {}
 }
