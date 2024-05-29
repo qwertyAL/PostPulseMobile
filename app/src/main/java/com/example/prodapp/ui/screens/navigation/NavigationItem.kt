@@ -1,4 +1,4 @@
-package com.example.prodapp.screens.navigation
+package com.example.prodapp.ui.screens.navigation
 
 import androidx.compose.ui.graphics.vector.ImageVector
 

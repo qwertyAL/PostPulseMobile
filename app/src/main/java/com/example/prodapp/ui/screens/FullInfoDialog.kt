@@ -1,4 +1,4 @@
-package com.example.prodapp.screens
+package com.example.prodapp.ui.screens
 
 import android.util.Log
 import android.webkit.WebView
@@ -20,8 +20,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import com.example.domain.model.PublicationModel
@@ -41,7 +44,7 @@ fun FullInfoDialog(item: PublicationModel) {
             modifier = Modifier
                 .width(350.dp)
                 .wrapContentHeight()
-                .background(color = MaterialTheme.colorScheme.background)
+                .background(color = Color(0xFFF6F6F6), shape = RoundedCornerShape(10.dp))
         ) {
             Column(
                 modifier = Modifier.padding(16.dp)
@@ -68,7 +71,7 @@ fun FullInfoDialog(item: PublicationModel) {
 
                         val html = """
                                 <head>
-                                    <meta name="viewport" content="width=device-width, initial-scale=1">
+                                    <meta name="viewport" content="width=device-width, user-scalable=yes">
                                 </head>
                                 <body style="margin: 0; padding: 0">
                                     <script async src="https://telegram.org/js/telegram-widget.js?22" data-telegram-post="$url" data-width="60%" data-userpic="false" data-dark="1"></script>
@@ -80,9 +83,23 @@ fun FullInfoDialog(item: PublicationModel) {
                 })
 
                 if(item.scheduledAt == null || item.scheduledAt == "null") {
-                    Text(text = "Не готово к отправке")
+                    Text(
+                        text = "Не готово к отправке",
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 15.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        color = Color(0xFF909092)
+                    )
                 } else {
-                    Text(text = "Будет отправлено: ${item.scheduledAt}")
+                    Text(
+                        text = "Будет отправлено: ${item.scheduledAt}",
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 15.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        color = Color(0xFF909092)
+                    )
                 }
             }
         }

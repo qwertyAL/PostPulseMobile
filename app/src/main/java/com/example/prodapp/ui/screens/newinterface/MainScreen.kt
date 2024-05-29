@@ -1,4 +1,4 @@
-package com.example.prodapp.screens.newinterface
+package com.example.prodapp.ui.screens.newinterface
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,6 +26,8 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,9 +36,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.liveData
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.example.domain.model.ChannelModel
+import com.example.prodapp.viewmodel.MainViewModel
 
 @Composable
-fun MainScreen(unit: () -> Unit) {
+fun MainScreen(vm: MainViewModel, navController: NavController) {
+
+    vm.loadListChannels()
+    val listChannels by vm.listChannels.observeAsState()
 
     Column(
         modifier = Modifier
@@ -71,7 +81,7 @@ fun MainScreen(unit: () -> Unit) {
         }
         SearchView()
         Spacer(modifier = Modifier.height(16.dp))
-        ChannelsList(unit)
+        ChannelsList(listChannels, navController)
     }
 
 }
@@ -114,32 +124,31 @@ fun SpacerChannels() {
 }
 
 @Composable
-fun ChannelsList(unit: () -> Unit) {
+fun ChannelsList(listChannels: List<ChannelModel>?, navController: NavController) {
     LazyColumn {
         item {
-            Channel(isFavorite = true, isAllChannel = true, unit = unit)
+            Channel(ChannelModel(id = -1, name = "All channels"), navController)
             SpacerChannels()
         }
-        item {
-            Channel(isFavorite = true, isAllChannel = false, unit = unit)
-            SpacerChannels()
-        }
-        items(10) {
-            Channel(isFavorite = false, isAllChannel = false, unit = unit)
-            SpacerChannels()
+        listChannels?.forEach {
+            item {
+                Channel(channelInfo = it, navController)
+                SpacerChannels()
+            }
         }
     }
 }
 
 @Composable
-fun Channel(isFavorite: Boolean, isAllChannel: Boolean, unit: () -> Unit) {
+fun Channel(channelInfo: ChannelModel, navController: NavController) {
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp)
-            .clickable { unit() }
+            .clickable { navController.navigate("channel_screen/${channelInfo.id}") }
     ) {
-        if(isAllChannel) {
+        if(channelInfo.id == -1L) {
             Icon(imageVector = Icons.Default.List, contentDescription = null, tint = Color(0xFF007AFF), modifier = Modifier
                 .width(60.dp)
                 .height(60.dp))
@@ -153,10 +162,10 @@ fun Channel(isFavorite: Boolean, isAllChannel: Boolean, unit: () -> Unit) {
                 .padding(start = 8.dp)
                 .weight(1F)
         ) {
-            if(isAllChannel) {
+            if(channelInfo.id == -1L) {
                 Text(text = "All channels", fontSize = 16.sp, fontWeight = FontWeight.Medium, color = Color(0xFF000000))
             } else {
-                Text(text = "Title", fontSize = 16.sp, fontWeight = FontWeight.Medium, color = Color(0xFF000000))
+                Text(text = channelInfo.name, fontSize = 16.sp, fontWeight = FontWeight.Medium, color = Color(0xFF000000))
             }
             Text(text = "last post name", fontSize = 15.sp, fontWeight = FontWeight.Normal, color = Color(0xFFC5C5C7))
         }
@@ -164,18 +173,14 @@ fun Channel(isFavorite: Boolean, isAllChannel: Boolean, unit: () -> Unit) {
             horizontalAlignment = Alignment.End
         ) {
             Text(text = "09/29", fontSize = 14.sp, fontWeight = FontWeight.Normal, color = Color(0xFFC5C5C7))
-            if(!isAllChannel) {
+            if(channelInfo.id != -1L) {
                 IconButton(
                     onClick = { /*TODO*/ },
                     modifier = Modifier
                         .width(20.dp)
                         .height(20.dp)
                 ) {
-                    if(isFavorite) {
-                        Icon(imageVector = Icons.Default.Favorite, contentDescription = null, tint = Color(0xFF007AFF))
-                    } else {
-                        Icon(imageVector = Icons.Default.FavoriteBorder, contentDescription = null, tint = Color(0xFFC5C5C7))
-                    }
+                    Icon(imageVector = Icons.Default.FavoriteBorder, contentDescription = null, tint = Color(0xFFC5C5C7))
                 }
             }
         }
@@ -185,5 +190,5 @@ fun Channel(isFavorite: Boolean, isAllChannel: Boolean, unit: () -> Unit) {
 @Composable
 @Preview
 fun PreviewMainScreen() {
-    MainScreen() {}
+//    MainScreen(navController = rememberNavController())
 }

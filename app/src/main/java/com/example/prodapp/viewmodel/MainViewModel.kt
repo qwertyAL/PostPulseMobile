@@ -32,6 +32,7 @@ class MainViewModel(
 
     private val _publications: MutableLiveData<List<PublicationModel>> = MutableLiveData()
     val publications: LiveData<List<PublicationModel>> = _publications
+
     fun loadPublications(channelId: Long, tabId: Int) {
         val cookie = getCookieFromLocalSourceUseCase.execute()
         if(cookie == "") {
@@ -77,6 +78,9 @@ class MainViewModel(
                 _listChannels.postValue(getListChannelsUseCase.execute(cookie))
             }
         }
+//        _listChannels.postValue(listOf(
+//            ChannelModel(id = 0, name = "Test 1"),
+//            ChannelModel(id = 1, name = "Test 2"), ChannelModel(id = 2, name = "Test 3")))
     }
 
     fun updatePost(post: PublicationModel) {

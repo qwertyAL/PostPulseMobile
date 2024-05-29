@@ -1,4 +1,4 @@
-package com.example.prodapp.screens
+package com.example.prodapp.ui.screens
 
 import android.content.res.Resources.Theme
 import androidx.compose.foundation.Image
@@ -338,4 +338,6 @@ fun ItemPublication(item: PublicationModel, vm: MainViewModel) {
             }
 //        }
     }
+
+
 }

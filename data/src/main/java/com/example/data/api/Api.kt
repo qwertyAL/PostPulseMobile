@@ -106,11 +106,13 @@ class Api {
     }
 
     suspend fun updatePost(cookie: String, id: Int, channelId: Long, name: String, text: String, comment: String, scheduledAt: String?) {
+        Log.i("TEST_UPDATE", "true")
         try {
             val response = ApiConstants.httpClient.put(ApiConstants.UPDATE_POST_URL) {
                 headers.append(HttpHeaders.Cookie, "session:$cookie")
                 setBody("{ \"id\": \"$id\", \"channelId\": \"$channelId\", \"name\": \"$name\", \"text\": \"$text\", \"comment\": \"$comment\" }")
             }
+            Log.i("TEST_UPDATE", response.status.value.toString())
         } catch (e: Exception) {
             Log.i("TEST_UPDATE", e.toString())
         }
@@ -234,6 +236,7 @@ class Api {
                         ))
                     }
                 }.toString())
+                Log.i("TEST_CHANNELS2", data.toString())
                 return buildList {
                     for(i in 0..<data.asJsonArray.size()) {
                         add(ChannelModel(
@@ -269,7 +272,7 @@ class Api {
                 // ТУТ ПОПРАВИТЬ НАДА ПАРСИНГ
                 val id = response.toString()
                 val cookieStore = response.headers
-                Log.i("TEST_HEADER", cookieStore.toString())
+                Log.i("TEST_HEADER", response.setCookie()[0].value)
                 return UserModel(
                     id = id,
                     cookie = response.setCookie()[0].value

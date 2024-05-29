@@ -14,6 +14,7 @@ class UpdatePostUseCase(
         text: String,
         comment: String,
         scheduledAt: String) {
+//        Log.i("TEST_UPDATE", "true")
         apiRepository.updatePost(cookie, id, channelId, name, text, comment, scheduledAt)
     }
 

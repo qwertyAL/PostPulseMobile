@@ -11,7 +11,7 @@ import io.ktor.serialization.gson.gson
 
 object ApiConstants {
 
-    private const val BASE_URL = "https://post-pulse.ru/api"
+    private const val BASE_URL = "https://api.post-pulse.ru"
     const val LOGIN_URL = "$BASE_URL/access/login"
     const val LIST_CHANNELS_URL = "$BASE_URL/channels"
     const val LIST_DRAFTS_URL = "$BASE_URL/posts/draft"

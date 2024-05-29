@@ -1,4 +1,4 @@
-package com.example.prodapp.screens
+package com.example.prodapp.ui.screens
 
 import android.webkit.WebChromeClient
 import android.webkit.WebView

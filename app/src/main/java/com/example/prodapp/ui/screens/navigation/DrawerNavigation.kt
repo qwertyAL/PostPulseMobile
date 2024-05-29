@@ -1,4 +1,4 @@
-package com.example.prodapp.screens.navigation
+package com.example.prodapp.ui.screens.navigation
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -41,6 +41,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.domain.model.ChannelModel
 import com.example.domain.model.PublicationModel
-import com.example.prodapp.screens.ListPublications
-import com.example.prodapp.screens.TabBar
+import com.example.prodapp.ui.screens.ListPublications
+import com.example.prodapp.ui.screens.TabBar
 import kotlinx.coroutines.launch
